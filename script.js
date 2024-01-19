@@ -157,18 +157,44 @@ function truncateString(str, limit) {
 function displayPagination(currentPage, totalPages) {
   const pagination = document.getElementById("pagination");
 
+  // Define the maximum number of page buttons to show
+  const maxPageButtons = 5;
+
+  // Calculate the start and end of the range based on the current page
+  let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+  let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+  // Adjust the range if it exceeds the total pages
+  if (endPage - startPage + 1 < maxPageButtons) {
+    startPage = Math.max(1, endPage - maxPageButtons + 1);
+  }
+
   // Previous button
   const prevButton = `<button onclick="changePage(${currentPage - 1})" ${
     currentPage === 1 ? "disabled" : ""
   }>Previous</button>`;
 
-  // Page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => {
-    const pageNumber = i + 1;
-    return `<button onclick="changePage(${pageNumber})" class="${
-      currentPage === pageNumber ? "current-page" : ""
-    }">${pageNumber}</button>`;
-  }).join("");
+  // Page numbers with ellipsis
+  let pageNumbers = "";
+  if (startPage > 1) {
+    pageNumbers += `<button onclick="changePage(1)">1</button>`;
+    if (startPage > 2) {
+      pageNumbers += `<span class="ellipsis">...</span>`;
+    }
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers += `<button onclick="changePage(${i})" class="${
+      currentPage === i ? "current-page" : ""
+    }">${i}</button>`;
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      pageNumbers += `<span class="ellipsis">...</span>`;
+    }
+    pageNumbers += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
+  }
 
   // Next button
   const nextButton = `<button onclick="changePage(${currentPage + 1})" ${
