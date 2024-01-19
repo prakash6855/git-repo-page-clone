@@ -16,7 +16,6 @@ function fetchRepositories(pageNumber = 1) {
 
   // Reset the content in case there was a previous search
   const repoList = document.getElementById("repo-list");
-  const userDetails = document.getElementsByClassName("user-details");
   const userDetailsContainer = document.getElementById(
     "user-details-container"
   );
@@ -25,6 +24,15 @@ function fetchRepositories(pageNumber = 1) {
   const repoCountElement = document.getElementById("repo-count");
   const socialLinks = document.getElementById("social-links");
 
+  if (!userDetailsContainer) {
+    console.error("Element with ID 'user-details-container' not found.");
+    return;
+  }
+  const errorContainer = document.getElementById("error-container");
+  if (errorContainer) {
+    errorContainer.classList.add("hidden");
+  }
+
   repoList.innerHTML = "";
   userDetailsContainer.classList.add("hidden");
   let repoCount = 0;
@@ -32,7 +40,7 @@ function fetchRepositories(pageNumber = 1) {
   fetch(apiUrl)
     .then((response) => {
       if (!response.ok) {
-        if (response.status >= 400 && response.status < 500) {
+        if (response.status === 404) {
           throw new Error(`User '${username}' not found.`);
         } else {
           throw new Error(
@@ -51,24 +59,24 @@ function fetchRepositories(pageNumber = 1) {
       // Display social links if available
       if (user.blog || user.twitter_username || user.linkedin) {
         socialLinks.innerHTML = `
-          <ul>
-            ${
-              user.blog
-                ? `<li><a href="${user.blog}" target="_blank">Blog</a></li>`
-                : ""
-            }
-            ${
-              user.twitter_username
-                ? `<li><a href="https://twitter.com/${user.twitter_username}" target="_blank">${user.twitter_username}</a></li>`
-                : ""
-            }
-            ${
-              user.linkedin
-                ? `<li><a href="${user.linkedin}" target="_blank">LinkedIn</a></li>`
-                : ""
-            }
-          </ul>
-        `;
+            <ul>
+              ${
+                user.blog
+                  ? `<li><a href="${user.blog}" target="_blank">Blog</a></li>`
+                  : ""
+              }
+              ${
+                user.twitter_username
+                  ? `<li><a href="https://twitter.com/${user.twitter_username}" target="_blank">${user.twitter_username}</a></li>`
+                  : ""
+              }
+              ${
+                user.linkedin
+                  ? `<li><a href="${user.linkedin}" target="_blank">LinkedIn</a></li>`
+                  : ""
+              }
+            </ul>
+          `;
       }
 
       userDetailsContainer.classList.remove("hidden");
@@ -98,8 +106,18 @@ function fetchRepositories(pageNumber = 1) {
       displayPagination(pageNumber, totalPages);
     })
     .catch((error) => {
-      const errorMessage = `<p style="color: red;">${error.message}</p>`;
-      userDetailsContainer.innerHTML = errorMessage;
+      const errorMessage =
+        error.message === `User '${username}' not found.`
+          ? `<p style="color: red;">User not found. Please enter a valid GitHub username.</p>`
+          : `<p style="color: red;">${error.message}</p>`;
+
+      const errorContainer = document.getElementById("error-container");
+      if (errorContainer) {
+        errorContainer.innerHTML = errorMessage;
+        errorContainer.classList.remove("hidden");
+      } else {
+        console.error("Element with ID 'error-container' not found.");
+      }
     });
 }
 
