@@ -16,7 +16,7 @@ function fetchRepositories(pageNumber = 1) {
 
   // Reset the content in case there was a previous search
   const repoList = document.getElementById("repo-list");
-  const userDetails = document.getElementById("user-details");
+  const userDetails = document.getElementsByClassName("user-details");
   const userDetailsContainer = document.getElementById(
     "user-details-container"
   );
@@ -92,19 +92,18 @@ function fetchRepositories(pageNumber = 1) {
       // Paginate repositories
       const totalPages = Math.ceil(repoCount / ITEMS_PER_PAGE);
 
-      displayRepositories(repositories, totalPages);
+      displayRepositories(repositories);
 
       // Display pagination
       displayPagination(pageNumber, totalPages);
     })
     .catch((error) => {
       const errorMessage = `<p style="color: red;">${error.message}</p>`;
-      userDetails.innerHTML = errorMessage;
-      userDetailsContainer.classList.remove("hidden");
+      userDetailsContainer.innerHTML = errorMessage;
     });
 }
 
-function displayRepositories(repositories, totalPages) {
+function displayRepositories(repositories) {
   const repoList = document.getElementById("repo-list");
   const reposContainer = document.getElementById("repos-container");
   const startIndex = 0;
