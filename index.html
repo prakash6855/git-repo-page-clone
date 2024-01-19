@@ -14,13 +14,11 @@
         id="usernameInput"
         placeholder="Enter GitHub username"
       />
-      <button id="fetch-repo" onclick="getDetails()">
-        Fetch Repositories
-      </button>
+      <button id="fetch-repo" onclick="getDetails()">Fetch Repositories</button>
     </header>
 
     <main id="main">
-      <div id="loader" class="hidden"></div>
+      <div id="user-details-loader" class="hidden loader"></div>
       <div id="user-details-container" class="hidden">
         <div class="user-details">
           <div>
@@ -37,6 +35,7 @@
           <ul id="repo-list"></ul>
           <div id="pagination"></div>
         </div>
+        <div id="user-repo-loader" class="hidden loader"></div>
       </div>
       <div id="error-container" class="hidden"></div>
     </main>

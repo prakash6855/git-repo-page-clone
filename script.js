@@ -4,6 +4,11 @@ const DEFAULT_DESCRIPTION = "No Description provided";
 let user = null;
 let errorContainer = document.getElementById("error-container");
 let userDetailsContainer = document.getElementById("user-details-container");
+let reposContainer = document.getElementById("repos-container");
+let userDetailsLoader = document.getElementById("user-details-loader");
+let userRepoLoader = document.getElementById("user-repo-loader");
+let pagination = document.getElementById("pagination");
+const repoList = document.getElementById("repo-list");
 
 function fetchUserDetails(username) {
   const apiUrl = `https://api.github.com/users/${username}`;
@@ -35,7 +40,6 @@ async function fetchRepositories(username, pageNumber = 1) {
 
       // Assuming errorContainer is defined elsewhere
       if (errorContainer) {
-        userDetailsContainer.classList.add("hidden");
         errorContainer.classList.remove("hidden");
         errorContainer.innerHTML = await response.text();
       }
@@ -98,8 +102,6 @@ function displayUserDetails(user) {
 }
 
 function displayRepositories(repositories) {
-  const repoList = document.getElementById("repo-list");
-  const reposContainer = document.getElementById("repos-container");
   const startIndex = 0;
   const endIndex = startIndex + ITEMS_PER_PAGE;
 
@@ -206,6 +208,10 @@ function getDetails(newPage = 1) {
     return;
   }
   user = null;
+  userDetailsContainer.classList.add("hidden");
+  reposContainer.classList.add("hidden");
+  userDetailsLoader.classList.remove("hidden");
+  userRepoLoader.classList.remove("hidden");
 
   fetchUserAndRepositories(username, newPage)
     .then(([userDetail, repositories]) => {
@@ -217,15 +223,25 @@ function getDetails(newPage = 1) {
       // Update pagination
       const totalPages = Math.ceil(user.public_repos / ITEMS_PER_PAGE);
       displayPagination(newPage, totalPages);
+      userDetailsContainer.classList.remove("hidden");
+      reposContainer.classList.remove("hidden");
+      userDetailsLoader.classList.add("hidden");
+      userRepoLoader.classList.add("hidden");
     })
     .catch((error) => {
       // Handle error
       console.error(error);
       user = null;
+      userDetailsLoader.classList.add("hidden");
+      userRepoLoader.classList.add("hidden");
     });
 }
 
 async function changePage(newPage = 1) {
+  repoList.innerHTML = "";
+  pagination.innerHTML = "";
+  userRepoLoader.classList.remove("hidden");
+
   fetchRepositoriesHelper(user.login, newPage)
     .then(([repositories]) => {
       console.log(repositories);
@@ -235,9 +251,11 @@ async function changePage(newPage = 1) {
       // Update pagination
       const totalPages = Math.ceil(user.public_repos / ITEMS_PER_PAGE);
       displayPagination(newPage, totalPages);
+      userRepoLoader.classList.add("hidden");
     })
     .catch((error) => {
       // Handle error
       console.error(error);
+      userRepoLoader.classList.add("hidden");
     });
 }
