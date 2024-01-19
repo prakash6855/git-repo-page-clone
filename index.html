@@ -1,34 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
     <title>GitHub Repositories</title>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>GitHub Repositories</h1>
-        <input type="text" id="usernameInput" placeholder="Enter GitHub username">
-        <button onclick="fetchRepositories()">Fetch Repositories</button>
+      <h1>GitHub Repositories</h1>
+      <input
+        type="text"
+        id="usernameInput"
+        placeholder="Enter GitHub username"
+      />
+      <button onclick="fetchRepositories()">Fetch Repositories</button>
     </header>
 
     <main>
-        <div id="user-details-container" class="hidden">
-            <div id="user-details">
-                <img id="profile-picture" alt="Profile Picture">
-                <h2 id="username">GitHub Username: </h2>
-                <p id="repo-count">Public Repositories: </p>
-                <div id="social-links"></div>
-            </div>
-            <div id="repos-container">
-                <h2>Repositories</h2>
-                <ul id="repo-list"></ul>
-                <div id="pagination"></div>
-            </div>
+      <div id="user-details-container" class="hidden">
+        <div class="user-details">
+          <div>
+            <img id="profile-picture" alt="Profile Picture" />
+          </div>
+          <div class="user-links">
+            <h2 id="username"></h2>
+            <p id="repo-count">Public Repositories:</p>
+            <div id="social-links"></div>
+          </div>
         </div>
+        <div id="repos-container">
+          <h2>Repositories</h2>
+          <ul id="repo-list"></ul>
+          <div id="pagination"></div>
+        </div>
+      </div>
     </main>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

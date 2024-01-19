@@ -127,3 +127,15 @@ a {
   box-shadow: 0 0 0 1px black;
   margin-bottom: 10px;
 }
+
+.user-details {
+  display: flex;
+}
+
+.user-links {
+  margin-left: 2rem;
+}
+
+#username {
+  font-style: italic;
+}

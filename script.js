@@ -43,7 +43,7 @@ function fetchRepositories() {
     })
     .then((user) => {
       profilePicture.src = user.avatar_url;
-      usernameElement.textContent = `GitHub Username: ${user.login}`;
+      usernameElement.textContent = `${user.login}`;
       repoCountElement.textContent = `Public Repositories: ${user.public_repos}`;
 
       // Display social links if available
