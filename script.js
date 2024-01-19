@@ -1,6 +1,7 @@
+import { truncateString } from "./stringHelper.js";
+
 const DEFAULT_ITEMS_PER_PAGE = 10;
 const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 10;
-const DEFAULT_DESCRIPTION = "No Description provided";
 let user = null;
 let errorContainer = document.getElementById("error-container");
 let userDetailsContainer = document.getElementById("user-details-container");
@@ -139,17 +140,6 @@ function displayRepositories(repositories) {
   userDetailsContainer.classList.remove("hidden");
 }
 
-function truncateString(str, limit) {
-  const words = str?.split(" ");
-  if (words?.length > limit) {
-    return words.slice(0, limit).join(" ") + "...";
-  }
-  if (str == "" || str == null) {
-    return DEFAULT_DESCRIPTION;
-  }
-  return str;
-}
-
 function displayPagination(currentPage, totalPages) {
   const pagination = document.getElementById("pagination");
 
@@ -200,7 +190,7 @@ function displayPagination(currentPage, totalPages) {
   pagination.innerHTML = `${prevButton}${pageNumbers}${nextButton}`;
 }
 
-function getDetails(newPage = 1) {
+window.getDetails = function (newPage = 1) {
   const usernameInput = document.getElementById("usernameInput");
   const username = usernameInput.value.trim();
   ITEMS_PER_PAGE = reposPerPageInput.value;
@@ -240,9 +230,9 @@ function getDetails(newPage = 1) {
       userDetailsLoader.classList.add("hidden");
       userRepoLoader.classList.add("hidden");
     });
-}
+};
 
-async function changePage(newPage = 1) {
+window.changePage = function(newPage = 1) {
   repoList.innerHTML = "";
   pagination.innerHTML = "";
   userRepoLoader.classList.remove("hidden");
