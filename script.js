@@ -51,7 +51,6 @@ function fetchRepositories(pageNumber = 1) {
       // Display social links if available
       if (user.blog || user.twitter_username || user.linkedin) {
         socialLinks.innerHTML = `
-          <p>Social Links:</p>
           <ul>
             ${
               user.blog
