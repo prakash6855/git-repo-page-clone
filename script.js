@@ -83,7 +83,7 @@ function displayUserDetails(user) {
   repoCountElement.textContent = `Public Repositories: ${user.public_repos}`;
 
   // Display social links if available
-  if (user.blog || user.twitter_username || user.linkedin) {
+  if (user.blog || user.twitter_username || user.linkedin || user.login) {
     socialLinks.innerHTML = `
       <ul>
         ${
@@ -99,6 +99,11 @@ function displayUserDetails(user) {
         ${
           user.linkedin
             ? `<li><a href="${user.linkedin}" target="_blank">LinkedIn</a></li>`
+            : ""
+        }
+        ${
+          user.login
+            ? `<li><a href="https://github.com/${user.login}" target="_blank">https://github.com/${user.login}</a></li>`
             : ""
         }
       </ul>
