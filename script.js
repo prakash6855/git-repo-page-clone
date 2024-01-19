@@ -14,6 +14,7 @@ const repoList = document.getElementById("repo-list");
 const reposPerPageInput = document.getElementById("reposPerPageInput");
 let ITEMS_PER_PAGE = reposPerPageInput.value;
 let searchInput = document.getElementById("repoSearchInput");
+const socialLinks = document.getElementById("social-links");
 
 function fetchUserDetails(username) {
   const apiUrl = `https://api.github.com/users/${username}`;
@@ -76,7 +77,6 @@ function displayUserDetails(user) {
   const profilePicture = document.getElementById("profile-picture");
   const usernameElement = document.getElementById("username");
   const repoCountElement = document.getElementById("repo-count");
-  const socialLinks = document.getElementById("social-links");
 
   profilePicture.src = user.avatar_url;
   usernameElement.textContent = `${user.login}`;
@@ -213,6 +213,7 @@ window.getDetails = function (newPage = 1) {
   if (ITEMS_PER_PAGE <= 0 || ITEMS_PER_PAGE > 100) {
     ITEMS_PER_PAGE = DEFAULT_ITEMS_PER_PAGE;
   }
+  socialLinks.innerHTML = "";
 
   if (username === "") {
     alert("Please enter a valid GitHub username.");
