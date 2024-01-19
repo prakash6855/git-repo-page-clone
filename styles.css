@@ -70,7 +70,9 @@ a {
 }
 
 #pagination {
-  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  width: 60rem;
 }
 
 #pagination button {
@@ -112,7 +114,7 @@ a {
   font-weight: bold;
 }
 .repo-item {
-  width: 100%;
+  width: 30rem;
 }
 
 .container {
@@ -121,8 +123,7 @@ a {
 }
 
 .container > div {
-  flex: 50%; /* or - flex: 0 50% - or - flex-basis: 50% - */
-  /*demo*/
+  flex: 50%;
   box-shadow: 0 0 0 1px black;
   margin-bottom: 10px;
 }
