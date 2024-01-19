@@ -1,7 +1,7 @@
 import { truncateString } from "./stringHelper.js";
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
-const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 10;
+const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 5;
 let user = null;
 let errorContainer = document.getElementById("error-container");
 let userDetailsContainer = document.getElementById("user-details-container");
@@ -232,7 +232,7 @@ window.getDetails = function (newPage = 1) {
     });
 };
 
-window.changePage = function(newPage = 1) {
+window.changePage = function (newPage = 1) {
   repoList.innerHTML = "";
   pagination.innerHTML = "";
   userRepoLoader.classList.remove("hidden");
@@ -253,4 +253,4 @@ window.changePage = function(newPage = 1) {
       console.error(error);
       userRepoLoader.classList.add("hidden");
     });
-}
+};
