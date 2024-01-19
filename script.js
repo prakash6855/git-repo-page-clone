@@ -2,7 +2,7 @@ const ITEMS_PER_PAGE = 10;
 const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 20;
 const DEFAULT_DESCRIPTION = "No Description provided";
 
-function fetchRepositories() {
+function fetchRepositories(pageNumber = 1) {
   const usernameInput = document.getElementById("usernameInput");
   const username = usernameInput.value.trim();
 
@@ -12,7 +12,7 @@ function fetchRepositories() {
   }
 
   const apiUrl = `https://api.github.com/users/${username}`;
-  const reposUrl = `https://api.github.com/users/${username}/repos`;
+  const reposUrl = `https://api.github.com/users/${username}/repos?page=${pageNumber}&per_page=${ITEMS_PER_PAGE}`;
 
   // Reset the content in case there was a previous search
   const repoList = document.getElementById("repo-list");
@@ -27,6 +27,7 @@ function fetchRepositories() {
 
   repoList.innerHTML = "";
   userDetailsContainer.classList.add("hidden");
+  let repoCount = 0;
 
   fetch(apiUrl)
     .then((response) => {
@@ -45,29 +46,30 @@ function fetchRepositories() {
       profilePicture.src = user.avatar_url;
       usernameElement.textContent = `${user.login}`;
       repoCountElement.textContent = `Public Repositories: ${user.public_repos}`;
+      repoCount = user.public_repos;
 
       // Display social links if available
       if (user.blog || user.twitter_username || user.linkedin) {
         socialLinks.innerHTML = `
-                    <p>Social Links:</p>
-                    <ul>
-                        ${
-                          user.blog
-                            ? `<li><a href="${user.blog}" target="_blank">Blog</a></li>`
-                            : ""
-                        }
-                        ${
-                          user.twitter_username
-                            ? `<li><a href="https://twitter.com/${user.twitter_username}" target="_blank">https://twitter.com/${user.twitter_username}</a></li>`
-                            : ""
-                        }
-                        ${
-                          user.linkedin
-                            ? `<li><a href="${user.linkedin}" target="_blank">LinkedIn</a></li>`
-                            : ""
-                        }
-                    </ul>
-                `;
+          <p>Social Links:</p>
+          <ul>
+            ${
+              user.blog
+                ? `<li><a href="${user.blog}" target="_blank">Blog</a></li>`
+                : ""
+            }
+            ${
+              user.twitter_username
+                ? `<li><a href="https://twitter.com/${user.twitter_username}" target="_blank">${user.twitter_username}</a></li>`
+                : ""
+            }
+            ${
+              user.linkedin
+                ? `<li><a href="${user.linkedin}" target="_blank">LinkedIn</a></li>`
+                : ""
+            }
+          </ul>
+        `;
       }
 
       userDetailsContainer.classList.remove("hidden");
@@ -89,13 +91,12 @@ function fetchRepositories() {
       }
 
       // Paginate repositories
-      const totalPages = Math.ceil(repositories.length / ITEMS_PER_PAGE);
-      const currentPage = 1;
+      const totalPages = Math.ceil(repoCount / ITEMS_PER_PAGE);
 
-      displayRepositories(repositories, currentPage, totalPages);
+      displayRepositories(repositories, totalPages);
 
       // Display pagination
-      displayPagination(currentPage, totalPages);
+      displayPagination(pageNumber, totalPages);
     })
     .catch((error) => {
       const errorMessage = `<p style="color: red;">${error.message}</p>`;
@@ -104,10 +105,10 @@ function fetchRepositories() {
     });
 }
 
-function displayRepositories(repositories, currentPage, totalPages) {
+function displayRepositories(repositories, totalPages) {
   const repoList = document.getElementById("repo-list");
   const reposContainer = document.getElementById("repos-container");
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const startIndex = 0;
   const endIndex = startIndex + ITEMS_PER_PAGE;
 
   repoList.innerHTML = "";
@@ -119,22 +120,22 @@ function displayRepositories(repositories, currentPage, totalPages) {
         ? `<span class="label">${repo.language}</span>`
         : "";
 
-      // Limit description to 50 words and append "..."
+      // Limit description to 20 words and append "..."
       const truncatedDescription = truncateString(
         repo.description,
         MAXIMUM_WORDS_SIZE_PER_DESCRIPTION
       );
 
       return `
-              <li>
-                  <div class="repo-item">
-                      <h3>${repo.name}</h3>
-                      <p>${truncatedDescription}</p>
-                      <p class="tech_stack">${techStackLabels}</p>
-                      <a href="${repo.html_url}" target="_blank">View on GitHub</a>
-                  </div>
-              </li>
-          `;
+        <li>
+          <div class="repo-item">
+            <h3>${repo.name}</h3>
+            <p>${truncatedDescription}</p>
+            <p class="tech_stack">${techStackLabels}</p>
+            <a href="${repo.html_url}" target="_blank">View on GitHub</a>
+          </div>
+        </li>
+      `;
     })
     .join("");
 
@@ -143,7 +144,6 @@ function displayRepositories(repositories, currentPage, totalPages) {
 }
 
 function truncateString(str, limit) {
-  // Truncate the string to the given limit
   const words = str?.split(" ");
   if (words?.length > limit) {
     return words.slice(0, limit).join(" ") + "...";
@@ -179,39 +179,5 @@ function displayPagination(currentPage, totalPages) {
 }
 
 function changePage(newPage) {
-  const usernameInput = document.getElementById("usernameInput");
-  const username = usernameInput.value.trim();
-
-  const reposUrl = `https://api.github.com/users/${username}/repos`;
-
-  fetch(reposUrl)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(
-          `Error fetching GitHub repositories. Status: ${response.status}`
-        );
-      }
-      return response.json();
-    })
-    .then((repositories) => {
-      const totalPages = Math.ceil(repositories.length / ITEMS_PER_PAGE);
-
-      // Validate the newPage value
-      newPage = Math.max(1, Math.min(newPage, totalPages));
-
-      // Display repositories for the new page
-      displayRepositories(repositories, newPage, totalPages);
-
-      // Display pagination for the new page
-      displayPagination(newPage, totalPages);
-    })
-    .catch((error) => {
-      const errorMessage = `<p style="color: red;">${error.message}</p>`;
-      const userDetails = document.getElementById("user-details");
-      const userDetailsContainer = document.getElementById(
-        "user-details-container"
-      );
-      userDetails.innerHTML = errorMessage;
-      userDetailsContainer.classList.remove("hidden");
-    });
+  fetchRepositories(newPage);
 }
