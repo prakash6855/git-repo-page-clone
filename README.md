@@ -61,6 +61,14 @@ Enhance the web application's responsiveness by incorporating CSS media queries.
 
 GitHub has API rate limits, and without authentication, there's a risk of hitting those limits. To address this, consider adding authentication at the backend and making authenticated API calls to GitHub. This will help prevent throttling and provide a more reliable service.
 
+## Live Demo
+
+Explore the GitHub Repositories Viewer in action by visiting the live demo:
+
+[GitHub Repositories Viewer Demo](https://prakash6855.github.io/git-repo-page-clone/)
+
+Feel free to interact with the application, fetch repositories, and try out the various features.
+
 ## Contributing
 
 Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
