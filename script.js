@@ -3,6 +3,7 @@ import { truncateString } from "./stringHelper.js";
 const DEFAULT_ITEMS_PER_PAGE = 10;
 const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 5;
 let user = null;
+let repositories = null;
 let errorContainer = document.getElementById("error-container");
 let userDetailsContainer = document.getElementById("user-details-container");
 let reposContainer = document.getElementById("repos-container");
@@ -12,6 +13,8 @@ let pagination = document.getElementById("pagination");
 const repoList = document.getElementById("repo-list");
 const reposPerPageInput = document.getElementById("reposPerPageInput");
 let ITEMS_PER_PAGE = reposPerPageInput.value;
+let searchInput = document.getElementById("repoSearchInput");
+
 function fetchUserDetails(username) {
   const apiUrl = `https://api.github.com/users/${username}`;
 
@@ -39,6 +42,7 @@ async function fetchRepositories(username, pageNumber = 1) {
       // If you want to set user to null in case of an error,
       // handle this logic outside of the fetchRepositories function
       user = null;
+      repositories = null;
 
       // Assuming errorContainer is defined elsewhere
       if (errorContainer) {
@@ -103,6 +107,15 @@ function displayUserDetails(user) {
   errorContainer.classList.add("hidden");
 }
 
+window.searchRepositories = function () {
+  const searchTerm = searchInput.value.trim().toLowerCase();
+  const filteredRepositories = repositories?.filter((repo) =>
+    repo.name.toLowerCase().includes(searchTerm)
+  );
+
+  displayRepositories(filteredRepositories);
+};
+
 function displayRepositories(repositories) {
   const startIndex = 0;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -116,7 +129,6 @@ function displayRepositories(repositories) {
         ? `<span class="label">${repo.language}</span>`
         : "";
 
-      // Limit description to 20 words and append "..."
       const truncatedDescription = truncateString(
         repo.description,
         MAXIMUM_WORDS_SIZE_PER_DESCRIPTION
@@ -207,16 +219,19 @@ window.getDetails = function (newPage = 1) {
     return;
   }
   user = null;
+  repositories = null;
   userDetailsContainer.classList.add("hidden");
   reposContainer.classList.add("hidden");
   userDetailsLoader.classList.remove("hidden");
   userRepoLoader.classList.remove("hidden");
 
   fetchUserAndRepositories(username, newPage)
-    .then(([userDetail, repositories]) => {
+    .then(([userDetail, repositoriesFound]) => {
       user = userDetail;
+      repositories = repositoriesFound;
+
       // Display repositories
-      displayRepositories(repositories);
+      displayRepositories(repositoriesFound);
       displayUserDetails(userDetail);
 
       // Update pagination
@@ -231,6 +246,7 @@ window.getDetails = function (newPage = 1) {
       // Handle error
       console.error(error);
       user = null;
+      repositories = null;
       userDetailsLoader.classList.add("hidden");
       userRepoLoader.classList.add("hidden");
     });
@@ -243,8 +259,6 @@ window.changePage = function (newPage = 1) {
 
   fetchRepositoriesHelper(user.login, newPage)
     .then(([repositories]) => {
-      console.log(repositories);
-
       // Display repositories and user details
       displayRepositories(repositories);
       // Update pagination

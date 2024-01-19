@@ -44,6 +44,13 @@
         </div>
         <div id="repos-container">
           <h2>Repositories</h2>
+          <input
+            type="text"
+            id="repoSearchInput"
+            placeholder="Search Repositories"
+            oninput="searchRepositories()"
+          />
+
           <ul id="repo-list"></ul>
           <div id="pagination"></div>
         </div>
