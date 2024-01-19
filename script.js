@@ -1,4 +1,6 @@
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
+const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 20;
+const DEFAULT_DESCRIPTION = "No Description provided";
 
 function fetchRepositories() {
   const usernameInput = document.getElementById("usernameInput");
@@ -116,23 +118,40 @@ function displayRepositories(repositories, currentPage, totalPages) {
       const techStackLabels = repo.language
         ? `<span class="label">${repo.language}</span>`
         : "";
+
+      // Limit description to 50 words and append "..."
+      const truncatedDescription = truncateString(
+        repo.description,
+        MAXIMUM_WORDS_SIZE_PER_DESCRIPTION
+      );
+
       return `
-            <li>
-                <div class="repo-item">
-                    <h3>${repo.name}</h3>
-                    <p>${repo.description || "No description available"}</p>
-                    <p class="tech_stack">${techStackLabels}</p>
-                    <a href="${
-                      repo.html_url
-                    }" target="_blank">View on GitHub</a>
-                </div>
-            </li>
-        `;
+              <li>
+                  <div class="repo-item">
+                      <h3>${repo.name}</h3>
+                      <p>${truncatedDescription}</p>
+                      <p class="tech_stack">${techStackLabels}</p>
+                      <a href="${repo.html_url}" target="_blank">View on GitHub</a>
+                  </div>
+              </li>
+          `;
     })
     .join("");
 
-  repoList.innerHTML = `<ul>${repoListHtml}</ul>`;
+  repoList.innerHTML = `<ul class="container">${repoListHtml}</ul>`;
   reposContainer.classList.remove("hidden");
+}
+
+function truncateString(str, limit) {
+  // Truncate the string to the given limit
+  const words = str?.split(" ");
+  if (words?.length > limit) {
+    return words.slice(0, limit).join(" ") + "...";
+  }
+  if (str == "" || str == null) {
+    return DEFAULT_DESCRIPTION;
+  }
+  return str;
 }
 
 function displayPagination(currentPage, totalPages) {
