@@ -133,7 +133,9 @@ a {
   display: flex;
   flex-wrap: wrap;
 }
-
+.repos-per-page-container {
+  display: contents;
+}
 .container > div {
   flex: 50%;
   box-shadow: 0 0 0 1px black;

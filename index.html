@@ -15,6 +15,17 @@
         placeholder="Enter GitHub username"
       />
       <button id="fetch-repo" onclick="getDetails()">Fetch Repositories</button>
+      <div class="repos-per-page-container">
+        <label for="reposPerPageInput">Repositories per page:</label>
+        <input
+          type="number"
+          id="reposPerPageInput"
+          placeholder="1-100"
+          min="1"
+          max="100"
+          value="10"
+        />
+      </div>
     </header>
 
     <main id="main">

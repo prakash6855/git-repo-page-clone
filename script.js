@@ -1,5 +1,5 @@
-const ITEMS_PER_PAGE = 10;
-const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 20;
+const DEFAULT_ITEMS_PER_PAGE = 10;
+const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 10;
 const DEFAULT_DESCRIPTION = "No Description provided";
 let user = null;
 let errorContainer = document.getElementById("error-container");
@@ -9,7 +9,8 @@ let userDetailsLoader = document.getElementById("user-details-loader");
 let userRepoLoader = document.getElementById("user-repo-loader");
 let pagination = document.getElementById("pagination");
 const repoList = document.getElementById("repo-list");
-
+const reposPerPageInput = document.getElementById("reposPerPageInput");
+let ITEMS_PER_PAGE = reposPerPageInput.value;
 function fetchUserDetails(username) {
   const apiUrl = `https://api.github.com/users/${username}`;
 
@@ -202,6 +203,10 @@ function displayPagination(currentPage, totalPages) {
 function getDetails(newPage = 1) {
   const usernameInput = document.getElementById("usernameInput");
   const username = usernameInput.value.trim();
+  ITEMS_PER_PAGE = reposPerPageInput.value;
+  if (ITEMS_PER_PAGE <= 0 || ITEMS_PER_PAGE > 100) {
+    ITEMS_PER_PAGE = DEFAULT_ITEMS_PER_PAGE;
+  }
 
   if (username === "") {
     alert("Please enter a valid GitHub username.");
