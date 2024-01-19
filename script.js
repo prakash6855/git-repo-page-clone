@@ -1,129 +1,100 @@
 const ITEMS_PER_PAGE = 10;
 const MAXIMUM_WORDS_SIZE_PER_DESCRIPTION = 20;
 const DEFAULT_DESCRIPTION = "No Description provided";
+let user = null;
+let errorContainer = document.getElementById("error-container");
+let userDetailsContainer = document.getElementById("user-details-container");
 
-function fetchRepositories(pageNumber = 1) {
-  const usernameInput = document.getElementById("usernameInput");
-  const username = usernameInput.value.trim();
-
-  if (username === "") {
-    alert("Please enter a valid GitHub username.");
-    return;
-  }
-
+function fetchUserDetails(username) {
   const apiUrl = `https://api.github.com/users/${username}`;
+
+  return fetch(apiUrl).then((response) => {
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(`User '${username}' not found.`);
+      } else {
+        throw new Error(
+          `Error fetching GitHub user. Status: ${response.status}`
+        );
+      }
+    }
+    return response.json();
+  });
+}
+
+async function fetchRepositories(username, pageNumber = 1) {
   const reposUrl = `https://api.github.com/users/${username}/repos?page=${pageNumber}&per_page=${ITEMS_PER_PAGE}`;
 
-  // Reset the content in case there was a previous search
-  const repoList = document.getElementById("repo-list");
-  const userDetailsContainer = document.getElementById(
-    "user-details-container"
-  );
+  try {
+    const response = await fetch(reposUrl);
+
+    if (!response.ok) {
+      // If you want to set user to null in case of an error,
+      // handle this logic outside of the fetchRepositories function
+      user = null;
+
+      // Assuming errorContainer is defined elsewhere
+      if (errorContainer) {
+        userDetailsContainer.classList.add("hidden");
+        errorContainer.classList.remove("hidden");
+        errorContainer.innerHTML = await response.text();
+      }
+
+      throw new Error(
+        `Error fetching GitHub repositories. Status: ${response.status}`
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(error);
+    throw error; // rethrow the error if needed in the calling context
+  }
+}
+
+function fetchUserAndRepositories(username, pageNumber = 1) {
+  return Promise.all([
+    fetchUserDetails(username),
+    fetchRepositories(username, pageNumber),
+  ]);
+}
+function fetchRepositoriesHelper(username, pageNumber = 1) {
+  return Promise.all([fetchRepositories(username, pageNumber)]);
+}
+
+function displayUserDetails(user) {
   const profilePicture = document.getElementById("profile-picture");
   const usernameElement = document.getElementById("username");
   const repoCountElement = document.getElementById("repo-count");
   const socialLinks = document.getElementById("social-links");
 
-  if (!userDetailsContainer) {
-    console.error("Element with ID 'user-details-container' not found.");
-    return;
-  }
-  const errorContainer = document.getElementById("error-container");
-  if (errorContainer) {
-    errorContainer.classList.add("hidden");
-  }
+  profilePicture.src = user.avatar_url;
+  usernameElement.textContent = `${user.login}`;
+  repoCountElement.textContent = `Public Repositories: ${user.public_repos}`;
 
-  repoList.innerHTML = "";
-  userDetailsContainer.classList.add("hidden");
-  let repoCount = 0;
-  // Show loader
-  const loader = document.getElementById("loader");
-  loader.classList.remove("hidden");
-
-  fetch(apiUrl)
-    .then((response) => {
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error(`User '${username}' not found.`);
-        } else {
-          throw new Error(
-            `Error fetching GitHub user. Status: ${response.status}`
-          );
+  // Display social links if available
+  if (user.blog || user.twitter_username || user.linkedin) {
+    socialLinks.innerHTML = `
+      <ul>
+        ${
+          user.blog
+            ? `<li><a href="${user.blog}" target="_blank">Blog</a></li>`
+            : ""
         }
-      }
-      loader.classList.add("hidden");
-      return response.json();
-    })
-    .then((user) => {
-      profilePicture.src = user.avatar_url;
-      usernameElement.textContent = `${user.login}`;
-      repoCountElement.textContent = `Public Repositories: ${user.public_repos}`;
-      repoCount = user.public_repos;
-
-      // Display social links if available
-      if (user.blog || user.twitter_username || user.linkedin) {
-        socialLinks.innerHTML = `
-            <ul>
-              ${
-                user.blog
-                  ? `<li><a href="${user.blog}" target="_blank">Blog</a></li>`
-                  : ""
-              }
-              ${
-                user.twitter_username
-                  ? `<li><a href="https://twitter.com/${user.twitter_username}" target="_blank">${user.twitter_username}</a></li>`
-                  : ""
-              }
-              ${
-                user.linkedin
-                  ? `<li><a href="${user.linkedin}" target="_blank">LinkedIn</a></li>`
-                  : ""
-              }
-            </ul>
-          `;
-      }
-
-      userDetailsContainer.classList.remove("hidden");
-
-      // Fetch and display repositories
-      return fetch(reposUrl);
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(
-          `Error fetching GitHub repositories. Status: ${response.status}`
-        );
-      }
-      return response.json();
-    })
-    .then((repositories) => {
-      if (repositories.length === 0) {
-        throw new Error(`User '${username}' has no public repositories.`);
-      }
-
-      // Paginate repositories
-      const totalPages = Math.ceil(repoCount / ITEMS_PER_PAGE);
-
-      displayRepositories(repositories);
-
-      // Display pagination
-      displayPagination(pageNumber, totalPages);
-    })
-    .catch((error) => {
-      const errorMessage =
-        error.message === `User '${username}' not found.`
-          ? `<p style="color: red;">User not found. Please enter a valid GitHub username.</p>`
-          : `<p style="color: red;">${error.message}</p>`;
-
-      const errorContainer = document.getElementById("error-container");
-      if (errorContainer) {
-        errorContainer.innerHTML = errorMessage;
-        errorContainer.classList.remove("hidden");
-      } else {
-        console.error("Element with ID 'error-container' not found.");
-      }
-      loader.classList.add("hidden");
-    });
+        ${
+          user.twitter_username
+            ? `<li><a href="https://twitter.com/${user.twitter_username}" target="_blank">${user.twitter_username}</a></li>`
+            : ""
+        }
+        ${
+          user.linkedin
+            ? `<li><a href="${user.linkedin}" target="_blank">LinkedIn</a></li>`
+            : ""
+        }
+      </ul>
+    `;
+  }
+  errorContainer.classList.add("hidden");
 }
 
 function displayRepositories(repositories) {
@@ -162,6 +133,7 @@ function displayRepositories(repositories) {
 
   repoList.innerHTML = `<ul class="container">${repoListHtml}</ul>`;
   reposContainer.classList.remove("hidden");
+  userDetailsContainer.classList.remove("hidden");
 }
 
 function truncateString(str, limit) {
@@ -225,6 +197,47 @@ function displayPagination(currentPage, totalPages) {
   pagination.innerHTML = `${prevButton}${pageNumbers}${nextButton}`;
 }
 
-function changePage(newPage) {
-  fetchRepositories(newPage);
+function getDetails(newPage = 1) {
+  const usernameInput = document.getElementById("usernameInput");
+  const username = usernameInput.value.trim();
+
+  if (username === "") {
+    alert("Please enter a valid GitHub username.");
+    return;
+  }
+  user = null;
+
+  fetchUserAndRepositories(username, newPage)
+    .then(([userDetail, repositories]) => {
+      user = userDetail;
+      // Display repositories
+      displayRepositories(repositories);
+      displayUserDetails(userDetail);
+
+      // Update pagination
+      const totalPages = Math.ceil(user.public_repos / ITEMS_PER_PAGE);
+      displayPagination(newPage, totalPages);
+    })
+    .catch((error) => {
+      // Handle error
+      console.error(error);
+      user = null;
+    });
+}
+
+async function changePage(newPage = 1) {
+  fetchRepositoriesHelper(user.login, newPage)
+    .then(([repositories]) => {
+      console.log(repositories);
+
+      // Display repositories and user details
+      displayRepositories(repositories);
+      // Update pagination
+      const totalPages = Math.ceil(user.public_repos / ITEMS_PER_PAGE);
+      displayPagination(newPage, totalPages);
+    })
+    .catch((error) => {
+      // Handle error
+      console.error(error);
+    });
 }

@@ -171,3 +171,7 @@ a {
     transform: rotate(360deg);
   }
 }
+
+#error-container {
+  color: red;
+}
