@@ -121,7 +121,7 @@ function displayRepositories(repositories, currentPage, totalPages) {
                 <div class="repo-item">
                     <h3>${repo.name}</h3>
                     <p>${repo.description || "No description available"}</p>
-                    <p>Tech Stack: ${techStackLabels}</p>
+                    <p class="tech_stack">${techStackLabels}</p>
                     <a href="${
                       repo.html_url
                     }" target="_blank">View on GitHub</a>
@@ -146,9 +146,9 @@ function displayPagination(currentPage, totalPages) {
   // Page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => {
     const pageNumber = i + 1;
-    return `<button onclick="changePage(${pageNumber})" ${
-      currentPage === pageNumber ? "disabled" : ""
-    }>${pageNumber}</button>`;
+    return `<button onclick="changePage(${pageNumber})" class="${
+      currentPage === pageNumber ? "current-page" : ""
+    }">${pageNumber}</button>`;
   }).join("");
 
   // Next button
@@ -160,40 +160,39 @@ function displayPagination(currentPage, totalPages) {
 }
 
 function changePage(newPage) {
-    const usernameInput = document.getElementById("usernameInput");
-    const username = usernameInput.value.trim();
-  
-    const reposUrl = `https://api.github.com/users/${username}/repos`;
-  
-    fetch(reposUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Error fetching GitHub repositories. Status: ${response.status}`
-          );
-        }
-        return response.json();
-      })
-      .then((repositories) => {
-        const totalPages = Math.ceil(repositories.length / ITEMS_PER_PAGE);
-  
-        // Validate the newPage value
-        newPage = Math.max(1, Math.min(newPage, totalPages));
-  
-        // Display repositories for the new page
-        displayRepositories(repositories, newPage, totalPages);
-  
-        // Display pagination for the new page
-        displayPagination(newPage, totalPages);
-      })
-      .catch((error) => {
-        const errorMessage = `<p style="color: red;">${error.message}</p>`;
-        const userDetails = document.getElementById("user-details");
-        const userDetailsContainer = document.getElementById(
-          "user-details-container"
+  const usernameInput = document.getElementById("usernameInput");
+  const username = usernameInput.value.trim();
+
+  const reposUrl = `https://api.github.com/users/${username}/repos`;
+
+  fetch(reposUrl)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(
+          `Error fetching GitHub repositories. Status: ${response.status}`
         );
-        userDetails.innerHTML = errorMessage;
-        userDetailsContainer.classList.remove("hidden");
-      });
-  }
-  
+      }
+      return response.json();
+    })
+    .then((repositories) => {
+      const totalPages = Math.ceil(repositories.length / ITEMS_PER_PAGE);
+
+      // Validate the newPage value
+      newPage = Math.max(1, Math.min(newPage, totalPages));
+
+      // Display repositories for the new page
+      displayRepositories(repositories, newPage, totalPages);
+
+      // Display pagination for the new page
+      displayPagination(newPage, totalPages);
+    })
+    .catch((error) => {
+      const errorMessage = `<p style="color: red;">${error.message}</p>`;
+      const userDetails = document.getElementById("user-details");
+      const userDetailsContainer = document.getElementById(
+        "user-details-container"
+      );
+      userDetails.innerHTML = errorMessage;
+      userDetailsContainer.classList.remove("hidden");
+    });
+}

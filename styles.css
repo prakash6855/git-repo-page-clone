@@ -3,14 +3,14 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f8f8f8;
 }
 
 header {
-  background-color: #0366d6; 
+  background-color: #0366d6;
   color: white;
   padding: 20px;
   text-align: center;
@@ -27,7 +27,7 @@ input {
 
 button {
   padding: 8px;
-  background-color: #2ea44f;
+  background-color: #197d9e;
   color: white;
   border: none;
   cursor: pointer;
@@ -52,12 +52,12 @@ li {
 }
 
 a {
-  color: #0366d6; 
+  color: #0c6fdf;
   text-decoration: none;
 }
 
 #profile-picture {
-  width: 100px; 
+  width: 100px;
   border-radius: 50%;
 }
 
@@ -73,12 +73,22 @@ a {
   margin-top: 10px;
 }
 
+#pagination button {
+  background-color: white;
+  color: #0c6fdf;
+}
+
+#pagination button.current-page {
+  background-color: #0c6fdf;
+  color: white;
+}
+
 .repo-item {
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 8px;
   margin: 10px;
-  width: 45%; 
+  width: 45%;
   display: inline-block;
   vertical-align: top;
   background-color: white;
@@ -89,10 +99,15 @@ a {
 }
 
 .label {
-  background-color: #f1f8ff; 
+  background-color: #0c6fdf;
   padding: 2px 5px;
   margin-right: 5px;
   border-radius: 3px;
   font-size: 12px;
   display: inline-block;
+}
+
+.tech_stack {
+  color: white;
+  font-weight: bold;
 }
