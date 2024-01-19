@@ -160,14 +160,16 @@ function displayPagination(currentPage, totalPages) {
     currentPage === 1 ? "disabled" : ""
   }>Previous</button>`;
 
+  // First page button
+  const firstPageButton = `<button onclick="changePage(1)" ${
+    currentPage === 1 ? "disabled" : ""
+  }>First</button>`;
+
   // Page numbers with ellipsis
   let pageNumbers = "";
-  if (startPage > 1) {
-    pageNumbers += `<button onclick="changePage(1)">1</button>`;
-    if (startPage > 2) {
-      pageNumbers += `<span class="ellipsis">...</span>`;
-    }
-  }
+  // if (startPage > 1) {
+  //   pageNumbers += `<span class="ellipsis">...</span>`;
+  // }
 
   for (let i = startPage; i <= endPage; i++) {
     pageNumbers += `<button onclick="changePage(${i})" class="${
@@ -175,19 +177,21 @@ function displayPagination(currentPage, totalPages) {
     }">${i}</button>`;
   }
 
-  if (endPage < totalPages) {
-    if (endPage < totalPages - 1) {
-      pageNumbers += `<span class="ellipsis">...</span>`;
-    }
-    pageNumbers += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
-  }
+  // if (endPage < totalPages) {
+  //   pageNumbers += `<span class="ellipsis">...</span>`;
+  // }
+
+  // Last page button
+  const lastPageButton = `<button onclick="changePage(${totalPages})" ${
+    currentPage === totalPages ? "disabled" : ""
+  }>Last</button>`;
 
   // Next button
   const nextButton = `<button onclick="changePage(${currentPage + 1})" ${
     currentPage === totalPages ? "disabled" : ""
   }>Next</button>`;
 
-  pagination.innerHTML = `${prevButton}${pageNumbers}${nextButton}`;
+  pagination.innerHTML = `${firstPageButton}${prevButton}${pageNumbers}${nextButton}${lastPageButton}`;
 }
 
 window.getDetails = function (newPage = 1) {
