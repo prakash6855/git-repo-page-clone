@@ -36,6 +36,9 @@ function fetchRepositories(pageNumber = 1) {
   repoList.innerHTML = "";
   userDetailsContainer.classList.add("hidden");
   let repoCount = 0;
+  // Show loader
+  const loader = document.getElementById("loader");
+  loader.classList.remove("hidden");
 
   fetch(apiUrl)
     .then((response) => {
@@ -48,6 +51,7 @@ function fetchRepositories(pageNumber = 1) {
           );
         }
       }
+      loader.classList.add("hidden");
       return response.json();
     })
     .then((user) => {
@@ -118,6 +122,7 @@ function fetchRepositories(pageNumber = 1) {
       } else {
         console.error("Element with ID 'error-container' not found.");
       }
+      loader.classList.add("hidden");
     });
 }
 
