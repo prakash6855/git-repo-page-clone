@@ -22,8 +22,6 @@ function fetchRepositories() {
   const usernameElement = document.getElementById("username");
   const repoCountElement = document.getElementById("repo-count");
   const socialLinks = document.getElementById("social-links");
-  const reposContainer = document.getElementById("repos-container");
-  const pagination = document.getElementById("pagination");
 
   repoList.innerHTML = "";
   userDetailsContainer.classList.add("hidden");
@@ -162,5 +160,40 @@ function displayPagination(currentPage, totalPages) {
 }
 
 function changePage(newPage) {
-  fetchRepositories();
-}
+    const usernameInput = document.getElementById("usernameInput");
+    const username = usernameInput.value.trim();
+  
+    const reposUrl = `https://api.github.com/users/${username}/repos`;
+  
+    fetch(reposUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Error fetching GitHub repositories. Status: ${response.status}`
+          );
+        }
+        return response.json();
+      })
+      .then((repositories) => {
+        const totalPages = Math.ceil(repositories.length / ITEMS_PER_PAGE);
+  
+        // Validate the newPage value
+        newPage = Math.max(1, Math.min(newPage, totalPages));
+  
+        // Display repositories for the new page
+        displayRepositories(repositories, newPage, totalPages);
+  
+        // Display pagination for the new page
+        displayPagination(newPage, totalPages);
+      })
+      .catch((error) => {
+        const errorMessage = `<p style="color: red;">${error.message}</p>`;
+        const userDetails = document.getElementById("user-details");
+        const userDetailsContainer = document.getElementById(
+          "user-details-container"
+        );
+        userDetails.innerHTML = errorMessage;
+        userDetailsContainer.classList.remove("hidden");
+      });
+  }
+  
