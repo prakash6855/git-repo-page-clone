@@ -47,7 +47,7 @@ function fetchRepositories() {
       repoCountElement.textContent = `Public Repositories: ${user.public_repos}`;
 
       // Display social links if available
-      if (user.blog || user.twitter || user.linkedin) {
+      if (user.blog || user.twitter_username || user.linkedin) {
         socialLinks.innerHTML = `
                     <p>Social Links:</p>
                     <ul>
@@ -57,8 +57,8 @@ function fetchRepositories() {
                             : ""
                         }
                         ${
-                          user.twitter
-                            ? `<li><a href="https://twitter.com/${user.twitter}" target="_blank">Twitter</a></li>`
+                          user.twitter_username
+                            ? `<li><a href="https://twitter.com/${user.twitter_username}" target="_blank">https://twitter.com/${user.twitter_username}</a></li>`
                             : ""
                         }
                         ${

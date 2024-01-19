@@ -78,6 +78,15 @@ a {
 #pagination button {
   background-color: white;
   color: #0c6fdf;
+  width: 5rem;
+  padding: 1rem;
+  border: 0.1rem solid gray;
+}
+
+#pagination button:disabled {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
 }
 
 #pagination button.current-page {
@@ -130,6 +139,7 @@ a {
 
 .user-details {
   display: flex;
+  align-items: center;
 }
 
 .user-links {
